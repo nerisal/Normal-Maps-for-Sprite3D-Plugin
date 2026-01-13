@@ -1,0 +1,26 @@
+[
+    {
+        "animation_name": "idle",
+        "animation_col": 1,
+        "animation_row": 1,
+        "frame_number": 4,
+        "frame_duration": 120,
+        "loop_mode": "NONE"
+    },
+    {
+        "animation_name": "walk",
+        "animation_col": 1,
+        "animation_row": 2,
+        "frame_number": 6,
+        "frame_duration": 100,
+        "loop_mode": "LINEAR"
+    },
+    {
+        "animation_name": "jump",
+        "animation_col": 1,
+        "animation_row": 3,
+        "frame_number": 3,
+        "frame_duration": 150,
+        "loop_mode": "LOOP_NONE"
+    }
+]

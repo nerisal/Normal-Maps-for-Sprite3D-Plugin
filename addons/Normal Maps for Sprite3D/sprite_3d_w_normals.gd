@@ -15,20 +15,78 @@ class_name Sprite3DwNormals extends Sprite3D
 @export_category("Create Frame Animation")
 
 @export var animation_player : AnimationPlayer ## Animation Player where the animation is created
+@export var delete_existed_animation_before_creating : bool = false ## Set True if you want to delete the already existed animation with the same name before creating
 
+@export_category("Create One Frame Animation")
 @export var animation_name : String = "default" ## Name of the new animation
 @export var animation_col : int = 1 ## The column on which the frame of an animation are located (start from 1)
 @export var animation_row : int = 1 ## The row on which the frame of an animation are located (start from 1)
 @export var frame_number : int = 0 ## The number of frames of the animation
 @export var frame_duration : int = 120 ## Duration of each frame in milliseconds (ms)
 @export var loop_mode : Animation.LoopMode = Animation.LoopMode.LOOP_NONE
-
-@export var delete_already_existed_animation : bool = false ## Set True if you want to delete the already existed animation with the same name
-
 @export var create_animation : bool = false: ## Press this only when everything above is set. I know that this is a checkbox and not a button ;)
 	set(value):
 		if value == true:
 			_create_frame_animation(animation_name, loop_mode, animation_col, animation_row, frame_number, frame_duration)
+
+@export_category("Create Frame Animation From Json")
+@export_file("*.json") var json_path: String
+@export var create_animation_from_json : bool = false: ## Press this only when json is set. I know that this is a checkbox and not a button ;)
+	set(value):
+		if value == true:
+			_create_frame_animation_from_json(json_path)
+
+func _create_frame_animation_from_json(json_path: String):
+	if json_path == "":
+		printerr("The JSON file path is not set correctly")
+		return
+
+	# Load and parse JSON file
+	var file = FileAccess.open(json_path, FileAccess.READ)
+	if not file:
+		printerr("Failed to open JSON file")
+		return
+
+	var json_content = file.get_as_text()
+	file.close()
+
+	var json = JSON.new()
+	var parse_result = json.parse(json_content)
+	if parse_result != OK:
+		printerr("Failed to parse JSON file: " + json.get_error_message())
+		return
+
+	var animations = json.data
+	if not animations is Array:
+		printerr("JSON data is not an array")
+		return
+
+	# Process each animation in the JSON array
+	for anim_config in animations:
+		if not anim_config is Dictionary:
+			printerr("Animation config is not a dictionary")
+			continue
+
+		# Extract animation properties from config
+		var anim_name = anim_config.get("animation_name", "default")
+		var anim_col = anim_config.get("animation_col", 1)
+		var anim_row = anim_config.get("animation_row", 1)
+		var anim_frames = anim_config.get("frame_number", 0)
+		var anim_duration = anim_config.get("frame_duration", 120)
+
+		# Handle loop_mode conversion
+		var loop_mode_str = anim_config.get("loop_mode", "LOOP_NONE").to_upper()
+		var loop_mode = Animation.LoopMode.LOOP_NONE
+		if loop_mode_str == "LOOP_NONE" or loop_mode_str == "NONE":
+			loop_mode = Animation.LoopMode.LOOP_NONE
+		elif loop_mode_str == "LOOP_LINEAR" or loop_mode_str == "LINEAR":
+			loop_mode = Animation.LoopMode.LOOP_LINEAR
+		elif loop_mode_str == "LOOP_PINGPONG" or loop_mode_str == "PINGPONG":
+			loop_mode = Animation.LoopMode.LOOP_PINGPONG
+
+		# Create the animation
+		_create_frame_animation(anim_name, loop_mode, anim_col, anim_row, anim_frames, anim_duration)
+
 
 func _ready() -> void:
 	
@@ -95,7 +153,7 @@ func _create_frame_animation(_animation_name: String, _loop_mode: Animation.Loop
 	var animation_list = animation_player.get_animation_list()
 	
 	if animation_list.has(_animation_name):
-		if not delete_already_existed_animation:
+		if not delete_existed_animation_before_creating:
 			printerr("There is already an animation with this name")
 			return
 
