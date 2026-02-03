@@ -15,7 +15,7 @@ class_name Sprite3DwNormals extends Sprite3D
 @export_category("Create Frame Animation")
 
 @export var animation_player : AnimationPlayer ## Animation Player where the animation is created
-@export var delete_existed_animation_before_creating : bool = false ## Set True if you want to delete the already existed animation with the same name before creating
+@export var delete_existing_animation_before_creating : bool = false ## Set True if you want to delete the already existed animation with the same name before creating
 
 
 @export_category("Create One Frame Animation")
@@ -165,7 +165,7 @@ func _create_frame_animation(_animation_name: String, _loop_mode: Animation.Loop
 	var animation_list = animation_player.get_animation_list()
 
 	if animation_list.has(_animation_name):
-		if not delete_existed_animation_before_creating:
+		if not delete_existing_animation_before_creating:
 			printerr("There is already an animation with this name")
 			return
 
