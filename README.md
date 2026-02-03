@@ -24,7 +24,7 @@ In `Project` → `Project Settings` → `Plugins`, enable the `Normal Maps for S
 
 Add a `NormalMapsForSprite3D` node and an `AnimationPlayer` node to your scene.
 
-![](addons/Normal Maps for Sprite3D/doc/Create-Scene.png)
+![](addons/Normal_Maps_for_Sprite3D/doc/Create-Scene.png)
 
 #### Configure Texture Properties
 
@@ -36,7 +36,7 @@ In the Inspector panel, configure the `NormalMapsForSprite3D` node properties:
 - `Hframes` : Set the number of horizontal frames in the sprite sheet.
 - `Vframes` : Set the number of vertical frames in the sprite sheet.
 
-![](addons/Normal Maps for Sprite3D/doc/Setup-Spritesheet.png)
+![](addons/Normal_Maps_for_Sprite3D/doc/Setup-Spritesheet.png)
 
 #### Create Animations
 
