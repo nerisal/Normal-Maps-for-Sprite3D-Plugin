@@ -8,7 +8,7 @@ A Godot4 plugin that helps with creating a Sprite3D with normal maps and animati
 
 Prepare  a full-action sprite sheet (`.png` format recommended) containing all frames for all animations, ensuring each action occupies a single horizontal row.
 
-Generate a corresponding normal map for this sprite sheet, typically using a tool like `Laigter`.
+Generate a corresponding normal map for this sprite sheet, typically using a tool like [Laigter](https://github.com/azagaya/laigter).
 
 > Due to copyright restrictions, no sample sprite sheet or normal map is provided here.
 
