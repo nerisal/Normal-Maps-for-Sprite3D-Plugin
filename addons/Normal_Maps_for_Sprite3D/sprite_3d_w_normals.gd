@@ -1,6 +1,8 @@
 @tool
 class_name Sprite3DwNormals extends Sprite3D
 
+enum DeleteTrack { ALL_TRACKS = 0, ONLY_FRAME_COORDS = 1}
+
 ## Sprite3D whith Animations and Normal Maps.
 ## Expecially made for PixelArt  
 
@@ -16,7 +18,7 @@ class_name Sprite3DwNormals extends Sprite3D
 
 @export var animation_player : AnimationPlayer ## Animation Player where the animation is created
 @export var delete_existing_animation_before_creating : bool = false ## Set True if you want to delete the already existed animation with the same name before creating
-
+@export var delete_track : DeleteTrack = DeleteTrack.ONLY_FRAME_COORDS ## Select what to delete when creating animation: ALL_TRACKS (delete entire animation) or ONLY_FRAME_COORDS (delete only frame coordinates track)
 
 @export_category("Create One Frame Animation")
 @export var animation_name : String = "default" ## Name of the new animation
@@ -164,24 +166,40 @@ func _create_frame_animation(_animation_name: String, _loop_mode: Animation.Loop
 
 	var animation_list = animation_player.get_animation_list()
 
+	var track_name = animation_track_path + ":frame_coords"
+
+	var animation_library : AnimationLibrary
+	var animation : Animation
 	if animation_list.has(_animation_name):
 		if not delete_existing_animation_before_creating:
-			printerr("There is already an animation with this name")
+			printerr("There is already an animation with this name, abort!")
 			return
 
 		for animation_lab_name in animation_player.get_animation_library_list():
 			var animation_lab = animation_player.get_animation_library(animation_lab_name)
-			if animation_lab.has_animation(_animation_name):
+			if not animation_lab.has_animation(_animation_name):
+				continue
+			animation_library = animation_lab
+			if delete_track == DeleteTrack.ALL_TRACKS:
 				animation_lab.remove_animation(_animation_name)
+			else:
+				var exist_animation = animation_lab.get_animation(_animation_name)
+				var track_id = exist_animation.find_track(track_name, Animation.TYPE_VALUE)
+				if track_id != -1:
+					exist_animation.remove_track(track_id)
+				animation = exist_animation
 
-	var animation = Animation.new()
+	if not animation_library:
+		animation_library = animation_player.get_animation_library("")
+	if not animation:
+		animation = Animation.new()
+
 	var track_index = animation.add_track(Animation.TYPE_VALUE)
-
 	var time : float = 0
 	var coords : Vector2i = Vector2i(_animation_col - 1, _animation_row - 1)
 
 	animation.loop_mode = _loop_mode
-	animation.track_set_path(track_index, animation_track_path + ":frame_coords")
+	animation.track_set_path(track_index, track_name)
 	animation.track_set_interpolation_type(track_index, 0) # Set the interpolation type to nearest for pixel art
 
 	for n in range(_frame_number):
@@ -191,5 +209,11 @@ func _create_frame_animation(_animation_name: String, _loop_mode: Animation.Loop
 		coords.x += 1
 
 	animation.set_length(time)
-	animation_player.get_animation_library("").add_animation(_animation_name, animation)
+	animation_library.add_animation(_animation_name, animation)
+
+	#var animation_library_name = animation_library.get_name()
+	#if animation_library_name.length() == 0 :
+	#	print_debug("#Add Animation [" + _animation_name + "]")
+	#else:
+	#	print_debug("#Add Animation [" + _animation_name + "] into [" + "]" + animation_library_name)
 
