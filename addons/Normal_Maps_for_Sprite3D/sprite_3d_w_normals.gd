@@ -203,6 +203,13 @@ func _create_frame_animation(_animation_name: String, _loop_mode: Animation.Loop
 	animation.track_set_interpolation_type(track_index, 0) # Set the interpolation type to nearest for pixel art
 
 	for n in range(_frame_number):
+		# automatically wraps to the next line
+		# when the end of the current line is reached.
+		if coords.x > hframes - 1:
+			coords.x  = 0
+			coords.y += 1
+		#if coords.y > vframes - 1:
+		#	pass
 		animation.track_insert_key(track_index, time, coords)
 		#animation.track_insert_key(track_index, time, value)
 		time += float(_frame_duration)/1000
